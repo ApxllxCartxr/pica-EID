@@ -27,8 +27,13 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
+    configuration = config.get_section(config.config_ini_section, {})
+    # Override URL from environment if available (Critical for Docker)
+    if os.getenv("DATABASE_URL"):
+        configuration["sqlalchemy.url"] = os.getenv("DATABASE_URL")
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

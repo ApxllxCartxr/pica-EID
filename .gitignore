@@ -1,0 +1,207 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# keep .env.example
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Node.js
+frontend/node_modules/
+frontend/npm-debug.log
+frontend/yarn-error.log
+frontend/test/emulated_fake_gcs_server_data
+frontend/.pnp
+frontend/.pnp.js
+frontend/coverage/
+frontend/.nyc_output/
+frontend/.lock-wscript
+frontend/*.log
+frontend/*.pid
+frontend/*.seed
+frontend/*.pid.lock
+frontend/lib-cov
+frontend/pids
+frontend/logs
+frontend/*.log
+frontend/pid
+
+# Frontend Build
+frontend/dist/
+frontend/build/
+
+# Frontend dependencies
+frontend/jspm_packages/
+frontend/web_modules/
+
+# TypeScript
+frontend/*.tsbuildinfo
+
+# Optional npm cache directory
+frontend/.npm
+
+# Optional eslint cache
+frontend/.eslintcache
+
+# Optional REPL history
+frontend/.node_repl_history
+
+# Output of 'npm pack'
+frontend/*.tgz
+
+# Yarn Integrity file
+frontend/.yarn-integrity
+
+# dotenv environment variables file
+frontend/.env
+frontend/.env.test
+frontend/.env.production
+
+# parcel-bundler cache
+frontend/.cache
+frontend/.parcel-cache
+
+# Next.js build output
+frontend/.next
+frontend/out
+
+# Nuxt.js build / generate output
+frontend/.nuxt
+frontend/dist
+
+# Gatsby files
+frontend/.cache/
+# Comment in the public line in if your project uses Gatsby and not Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# public
+
+# vuepress build output
+frontend/.vuepress/dist
+
+# Serverless directories
+frontend/.serverless/
+
+# FuseBox cache
+frontend/.fusebox/
+
+# DynamoDB Local files
+frontend/.dynamodb/
+
+# TernJS port file
+frontend/.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+frontend/.vscode-test
+
+# Project specific
+release_output/
+release_output.zip
+*.db
+*.sqlite
+*.sqlite3
+test_prismid.db
+
+# OS / IDE
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Agent specific
+.agent/

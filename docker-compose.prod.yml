@@ -4,16 +4,17 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: prismid-db
+    restart: always
     environment:
-      POSTGRES_USER: prismid
-      POSTGRES_PASSWORD: prismid_secret
-      POSTGRES_DB: prismid_db
+      POSTGRES_USER: ${POSTGRES_USER:-prismid}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prismid_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-prismid_db}
     ports:
       - "5434:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - prismid_prod_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U prismid -d prismid_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-prismid} -d ${POSTGRES_DB:-prismid_db}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,6 +22,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: prismid-redis
+    restart: always
     ports:
       - "6379:6379"
     healthcheck:
@@ -30,28 +32,30 @@ services:
       retries: 5
 
   app:
-    build: .
+    image: prismid-app:latest
     container_name: prismid-app
-    env_file: .env
+    restart: always
+    # Use existing .env file if available, otherwise defaults
+    env_file:
+      - .env
     ports:
-      - "8000:8000"
+      - "${APP_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     volumes:
-      - ./exports:/app/exports
+      - prismid_prod_exports:/app/exports
       - ./credentials:/app/credentials
-    command: >
-      sh -c "alembic upgrade head &&
-             python scripts/seed.py &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    # Command is embedded in Dockerfile, but we can override if needed. Default is fine.
 
   celery-worker:
-    build: .
+    image: prismid-app:latest
     container_name: prismid-celery-worker
-    env_file: .env
+    restart: always
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,9 +64,11 @@ services:
     command: celery -A app.tasks.celery_app worker --loglevel=info
 
   celery-beat:
-    build: .
+    image: prismid-app:latest
     container_name: prismid-celery-beat
-    env_file: .env
+    restart: always
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,15 +76,6 @@ services:
         condition: service_healthy
     command: celery -A app.tasks.celery_app beat --loglevel=info
 
-  nginx:
-    image: nginx:alpine
-    container_name: prismid-nginx
-    ports:
-      - "8081:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-
 volumes:
-  pgdata:
+  prismid_prod_db_data:
+  prismid_prod_exports:
