@@ -42,7 +42,7 @@ def _build_user_response(user: User) -> UserResponse:
         conversion_date=user.conversion_date,
         date_of_joining=user.date_of_joining,
         start_date=user.internship.start_date if user.internship else None,
-        end_date=user.internship.end_date if user.internship else None,
+        end_date=user.end_date if user.end_date else (user.internship.end_date if user.internship else None),
         created_at=user.created_at,
     )
 
@@ -87,12 +87,15 @@ def create_user(
     """Create a new user and generate their unique ULID (Superadmin only)."""
     # Validate intern fields
     if request.category == UserCategory.INTERN:
-        if not request.start_date or not request.end_date:
+        # If start_date not provided, use date_of_joining (which defaults to today if missing)
+        effective_start_date = request.start_date or request.date_of_joining or datetime.utcnow().date()
+        
+        if not request.end_date:
             raise HTTPException(
                 status_code=400,
-                detail="Interns require start_date and end_date",
+                detail="Interns require an end_date",
             )
-        if request.end_date <= request.start_date:
+        if request.end_date <= effective_start_date:
             raise HTTPException(
                 status_code=400,
                 detail="end_date must be after start_date",
@@ -121,9 +124,10 @@ def create_user(
 
     # Create internship tracking if intern
     if request.category == UserCategory.INTERN:
+        effective_start_date = request.start_date or request.date_of_joining or datetime.utcnow().date()
         internship = InternshipTracking(
             user_id=user.id,
-            start_date=request.start_date,
+            start_date=effective_start_date,
             end_date=request.end_date,
         )
         db.add(internship)
@@ -660,8 +664,9 @@ def end_internship(
     user.internship.end_date = datetime.utcnow().date() # Set end date to today
     user.internship.updated_at = datetime.utcnow()
 
-    # Update user status
+    # Update user status and end date
     user.status = UserStatus.EXPIRED
+    user.end_date = datetime.utcnow().date()
     user.updated_at = datetime.utcnow()
 
     # Log
@@ -701,6 +706,7 @@ def retire_employee(
     # Update user status
     previous_status = user.status.value
     user.status = UserStatus.INACTIVE
+    user.end_date = datetime.utcnow().date()
     user.updated_at = datetime.utcnow()
 
     # Log

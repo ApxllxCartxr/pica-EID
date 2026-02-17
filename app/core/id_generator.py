@@ -65,9 +65,8 @@ def ulid_to_display_id(ulid_str: str, category: str | None = None) -> str:
     suffix = ulid_str[-10:].upper()
     formatted = f"{suffix[:4]}-{suffix[4:8]}-{suffix[8:10]}"
 
-    if category:
-        prefix = "INT" if category.upper() == "INTERN" else "EMP"
-        return f"{prefix}-{formatted}"
+    if category and category.upper() == "INTERN":
+        return f"INT-{formatted}"
 
     return formatted
 
@@ -76,17 +75,14 @@ def display_id_to_ulid_suffix(display_id: str) -> str:
     """
     Extract the 10-character ULID suffix from a display ID.
 
-    Strips any role prefix (INT-/EMP-) and dashes.
-
-    Args:
-        display_id: A display ID like 'INT-T6V4-B1C9-D0' or 'T6V4-B1C9-D0'.
-
-    Returns:
-        10-character uppercase suffix string for DB lookup.
+    Strips 'INT-' prefix and dashes.
     """
     # Strip role prefix if present
     cleaned = display_id.upper().strip()
-    if cleaned.startswith(("INT-", "EMP-")):
+    if cleaned.startswith("INT-"):
+        cleaned = cleaned[4:]
+    # Also handle legacy EMP- if present, just in case
+    elif cleaned.startswith("EMP-"):
         cleaned = cleaned[4:]
 
     # Remove dashes
@@ -105,7 +101,7 @@ def is_display_id_format(value: str) -> bool:
     Patterns matched:
         XXXX-XXXX-XX
         INT-XXXX-XXXX-XX
-        EMP-XXXX-XXXX-XX
+        (Legacy EMP- supported for robustness)
     """
     pattern = r'^(?:(?:INT|EMP)-)?\w{4}-\w{4}-\w{2}$'
     return bool(re.match(pattern, value.upper().strip()))

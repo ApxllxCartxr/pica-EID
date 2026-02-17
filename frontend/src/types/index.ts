@@ -130,18 +130,15 @@ export interface RoleListResponse {
 
 export interface AuditLog {
     id: number;
-    user_id: number;
     action: string;
-    resource_type: string;
-    resource_id?: string;
-    details?: unknown;
-    ip_address?: string;
-    user_agent?: string;
-    created_at: string;
-    user?: {
-        name: string;
-        email: string;
-    };
+    entity_type: string;
+    entity_id?: string | null;
+    changed_by_name?: string | null;
+    previous_value?: Record<string, unknown> | null;
+    new_value?: Record<string, unknown> | null;
+    description?: string | null;
+    ip_address?: string | null;
+    timestamp: string;
 }
 
 export interface AuditLogListResponse {

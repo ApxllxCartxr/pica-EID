@@ -58,6 +58,22 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
+from fastapi.exceptions import RequestValidationError
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Log validation errors to console for debugging."""
+    try:
+        body = await request.json()
+    except:
+        body = "Could not parse body"
+    print(f"Validation Error Body: {body}")
+    print(f"Validation Errors: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+    )
+
+
 # --- Middleware (order matters: outermost first) ---
 app.add_middleware(RequestIdMiddleware)
 app.add_middleware(IdempotencyMiddleware)

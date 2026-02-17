@@ -69,13 +69,13 @@ export default function DivisionsPage() {
         <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Divisions</h1>
-                    <p className="text-slate-400">Manage business divisions.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Domains</h1>
+                    <p className="text-slate-400">Manage business domains.</p>
                 </div>
                 {activeTab === 'active' && (
                     <Button onClick={() => setModalOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Division
+                        Add Domain
                     </Button>
                 )}
             </div>
@@ -89,7 +89,7 @@ export default function DivisionsPage() {
                         : 'border-transparent text-slate-400 hover:text-slate-200'
                         }`}
                 >
-                    Active Divisions
+                    Active Domains
                 </button>
                 <button
                     onClick={() => setActiveTab('trash')}
@@ -124,7 +124,7 @@ export default function DivisionsPage() {
                         ) : divisions?.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="h-24 text-center text-slate-500">
-                                    No divisions found.
+                                    No domains found.
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -183,11 +183,11 @@ export default function DivisionsPage() {
                 </Table>
             </div>
 
-            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Create Division">
+            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Create Domain">
                 <DivisionForm onSubmit={(d) => createMutation.mutate(d)} isLoading={createMutation.isPending} />
             </Modal>
 
-            <Modal isOpen={!!editingDivision} onClose={() => setEditingDivision(null)} title="Edit Division">
+            <Modal isOpen={!!editingDivision} onClose={() => setEditingDivision(null)} title="Edit Domain">
                 <DivisionForm
                     division={editingDivision}
                     onSubmit={(d) => editingDivision && updateMutation.mutate({ id: editingDivision.id, data: d })}
@@ -195,9 +195,9 @@ export default function DivisionsPage() {
                 />
             </Modal>
 
-            <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Division">
+            <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete Domain">
                 <p className="text-slate-300 mb-6">
-                    Are you sure you want to move division <strong className="text-white">{deleteConfirm?.name}</strong> to trash?
+                    Are you sure you want to move domain <strong className="text-white">{deleteConfirm?.name}</strong> to trash?
                 </p>
                 <div className="flex justify-end gap-3">
                     <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
@@ -207,9 +207,9 @@ export default function DivisionsPage() {
                 </div>
             </Modal>
 
-            <Modal isOpen={!!restoreConfirm} onClose={() => setRestoreConfirm(null)} title="Restore Division">
+            <Modal isOpen={!!restoreConfirm} onClose={() => setRestoreConfirm(null)} title="Restore Domain">
                 <p className="text-slate-300 mb-6">
-                    Are you sure you want to restore division <strong className="text-white">{restoreConfirm?.name}</strong>?
+                    Are you sure you want to restore domain <strong className="text-white">{restoreConfirm?.name}</strong>?
                 </p>
                 <div className="flex justify-end gap-3">
                     <Button variant="outline" onClick={() => setRestoreConfirm(null)}>Cancel</Button>
@@ -219,9 +219,9 @@ export default function DivisionsPage() {
                 </div>
             </Modal>
 
-            <Modal isOpen={!!hardDeleteConfirm} onClose={() => setHardDeleteConfirm(null)} title="Permanently Delete Division">
+            <Modal isOpen={!!hardDeleteConfirm} onClose={() => setHardDeleteConfirm(null)} title="Permanently Delete Domain">
                 <p className="text-slate-300 mb-6">
-                    Are you sure you want to <strong className="text-red-400">permanently delete</strong> division <strong className="text-white">{hardDeleteConfirm?.name}</strong>?
+                    Are you sure you want to <strong className="text-red-400">permanently delete</strong> domain <strong className="text-white">{hardDeleteConfirm?.name}</strong>?
                     <br /><br />
                     <span className="text-sm text-slate-400">This action cannot be undone.</span>
                 </p>

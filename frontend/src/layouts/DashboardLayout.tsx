@@ -19,8 +19,8 @@ const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
     { to: '/users', icon: Users, label: 'Users' },
     { to: '/roles', icon: Shield, label: 'Roles' },
-    { to: '/domains', icon: Globe, label: 'Domains' },
-    { to: '/divisions', icon: Building, label: 'Divisions' },
+    { to: '/domains', icon: Globe, label: 'Divisions' },
+    { to: '/divisions', icon: Building, label: 'Domains' },
     { to: '/audit', icon: FileText, label: 'Audit' },
     { to: '/settings', icon: Settings, label: 'Settings' },
 ];

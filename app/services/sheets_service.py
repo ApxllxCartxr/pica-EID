@@ -56,48 +56,61 @@ class GoogleSheetsService:
         self._connect()
         total_synced = 0
 
-        # 1. Active Employees
+        # 1. Active Employees (Hide End Date)
+        # Headers: ID, ULID, Name, Email, Category, Status, Roles, Domain, Division, Join Date
+        active_emp_headers = ["ID", "ULID", "Name", "Email", "Category", "Status", "Roles", "Domain", "Division", "Join Date"]
         total_synced += self._sync_sheet(
             "Active Employees",
-            (User.category == UserCategory.EMPLOYEE) & (User.status == UserStatus.ACTIVE)
+            (User.category == UserCategory.EMPLOYEE) & (User.status == UserStatus.ACTIVE),
+            headers=active_emp_headers,
+            exclude_end_date=True
         )
 
-        # 2. Interns
+        # 2. Interns (Active)
+        # Headers: ID, ULID, Name, Email, Category, Status, Roles, Domain, Division, Start Date, End Date
+        intern_headers = ["ID", "ULID", "Name", "Email", "Category", "Status", "Roles", "Domain", "Division", "Start Date", "End Date"]
         total_synced += self._sync_sheet(
             "Interns",
-            (User.category == UserCategory.INTERN) & (User.status == UserStatus.ACTIVE)
+            (User.category == UserCategory.INTERN) & (User.status == UserStatus.ACTIVE),
+            headers=intern_headers
         )
 
-        # 3. Inactive Users
+        # 3. Past Employees
+        # Headers: ID, ULID, Name, Email, Category, Status, Roles, Domain, Division, Join Date, End Date
+        past_emp_headers = ["ID", "ULID", "Name", "Email", "Category", "Status", "Roles", "Domain", "Division", "Join Date", "End Date"]
         total_synced += self._sync_sheet(
-            "Inactive Users",
-            User.status.in_([UserStatus.INACTIVE, UserStatus.EXPIRED])
+            "Past Employees",
+            (User.category == UserCategory.EMPLOYEE) & User.status.in_([UserStatus.INACTIVE, UserStatus.EXPIRED, UserStatus.CONVERTED]),
+            headers=past_emp_headers
         )
 
-        # 4. Deleted Users
+        # 4. Past Interns
         total_synced += self._sync_sheet(
-            "Deleted Users",
-            None,
-            include_deleted=True
+            "Past Interns",
+            (User.category == UserCategory.INTERN) & User.status.in_([UserStatus.INACTIVE, UserStatus.EXPIRED, UserStatus.CONVERTED]),
+            headers=intern_headers
         )
-        
+
         # 5. Domains
         self._sync_domains()
         
-        # 6. Departments
+        # 6. Departments (Divisions)
         self._sync_departments()
 
         # 7. Users by Domain
         self._sync_grouped_users("Users by Domain", User.domain_id)
 
-        # 8. Users by Department
-        self._sync_grouped_users("Users by Department", User.division_id)
+        # 8. Users by Department (Division)
+        self._sync_grouped_users("Users by Division", User.division_id)
 
         logger.info(f"Pushed total {total_synced} user records to Google Sheets")
         return total_synced
 
-    def _sync_sheet(self, title: str, query_filter, include_deleted=False) -> int:
+    def _sync_sheet(self, title: str, query_filter, include_deleted=False, headers=None, exclude_end_date=False) -> int:
         """Helper to sync a standard user list sheet."""
+        if headers is None:
+            headers = self.HEADERS
+
         # fetch data
         query = self.db.query(User).options(
             joinedload(User.domain),
@@ -115,7 +128,7 @@ class GoogleSheetsService:
         
         users = query.order_by(User.created_at).all()
         
-        rows = [self.HEADERS]
+        rows = [headers]
         for user in users:
             roles = ", ".join(
                 ur.role.name for ur in user.user_roles
@@ -123,19 +136,36 @@ class GoogleSheetsService:
             )
             display_id = ulid_to_display_id(user.ulid, user.category.value if user.category else None)
             
-            rows.append([
+            # Common fields
+            row = [
                 display_id,
                 user.ulid,
                 user.name,
                 user.email,
-                user.category.value,
+                user.category.value if user.category else "",
                 user.status.value,
                 roles,
                 user.domain.name if user.domain else "",
                 user.division.name if user.division else "",
-                str(user.internship.start_date) if user.internship else "",
-                str(user.internship.end_date) if user.internship else "",
-            ])
+            ]
+
+            # Date logic
+            start_date = ""
+            end_date = ""
+
+            if user.category == UserCategory.EMPLOYEE:
+                start_date = str(user.date_of_joining) if user.date_of_joining else ""
+                end_date = str(user.end_date) if user.end_date else ""
+            elif user.category == UserCategory.INTERN and user.internship:
+                start_date = str(user.internship.start_date)
+                end_date = str(user.internship.end_date)
+            
+            row.append(start_date)
+            
+            if not exclude_end_date:
+                row.append(end_date)
+
+            rows.append(row)
 
         self._write_to_sheet(title, rows)
         return len(users)

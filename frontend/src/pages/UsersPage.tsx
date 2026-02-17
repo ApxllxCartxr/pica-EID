@@ -228,13 +228,14 @@ export default function UsersPage() {
                             <TableHead>Category</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Joining Date</TableHead>
+                            <TableHead>End Date</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">
+                                <TableCell colSpan={7} className="h-24 text-center">
                                     <div className="flex justify-center items-center gap-2 text-slate-500">
                                         <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                                     </div>
@@ -242,7 +243,7 @@ export default function UsersPage() {
                             </TableRow>
                         ) : data?.users.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                                <TableCell colSpan={7} className="h-24 text-center text-slate-500">
                                     No users found in {viewMode === 'active' ? 'active list' : viewMode === 'inactive' ? 'past employees' : 'trash'}.
                                 </TableCell>
                             </TableRow>
@@ -260,6 +261,9 @@ export default function UsersPage() {
                                     <TableCell>{getStatusBadge(user.status, !!user.deleted_at)}</TableCell>
                                     <TableCell className="text-slate-400 text-sm">
                                         {user.date_of_joining ? new Date(user.date_of_joining).toLocaleDateString() : '-'}
+                                    </TableCell>
+                                    <TableCell className="text-slate-400 text-sm">
+                                        {user.end_date ? new Date(user.end_date).toLocaleDateString() : '-'}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-1">

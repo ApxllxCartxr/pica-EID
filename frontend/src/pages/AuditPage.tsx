@@ -65,12 +65,11 @@ export default function AuditPage() {
                             data?.logs.map((log) => (
                                 <TableRow key={log.id}>
                                     <TableCell className="font-mono text-xs text-slate-400 whitespace-nowrap">
-                                        {new Date(log.created_at).toLocaleString()}
+                                        {new Date(log.timestamp).toLocaleString()}
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-slate-200">{log.user?.name || `User ${log.user_id}`}</span>
-                                            <span className="text-xs text-slate-500">{log.user?.email}</span>
+                                            <span className="font-medium text-slate-200">{log.changed_by_name || "System"}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -79,13 +78,14 @@ export default function AuditPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <FileText className="h-3 w-3 text-slate-500" />
-                                            <span className="text-slate-300">{log.resource_type}</span>
+                                            <span className="text-slate-300">{log.entity_type}</span>
+                                            {log.entity_id && <span className="text-xs text-slate-500">#{log.entity_id}</span>}
                                         </div>
                                     </TableCell>
                                     <TableCell className="max-w-xs truncate text-xs font-mono text-slate-500">
-                                        {JSON.stringify(log.details)}
+                                        {log.description || JSON.stringify(log.new_value || {})}
                                     </TableCell>
-                                    <TableCell className="text-slate-500 text-xs font-mono">{log.ip_address}</TableCell>
+                                    <TableCell className="text-slate-500 text-xs font-mono">{log.ip_address || '-'}</TableCell>
                                 </TableRow>
                             ))
                         )}

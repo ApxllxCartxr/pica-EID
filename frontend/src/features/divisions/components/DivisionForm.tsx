@@ -6,7 +6,7 @@ import { Input } from '../../../components/ui/Input';
 import type { Division } from '../../../types';
 
 const divisionSchema = z.object({
-    name: z.string().min(1, 'Division name is required'),
+    name: z.string().min(1, 'Domain name is required'),
     description: z.string().optional(),
     is_active: z.boolean(),
 });
@@ -33,8 +33,8 @@ export function DivisionForm({ division, onSubmit, isLoading }: DivisionFormProp
         <form onSubmit={handleSubmit((data) => onSubmit(data))} className="space-y-4">
             <Input
                 id="division-name"
-                label="Division Name"
-                placeholder="e.g. North America"
+                label="Domain Name"
+                placeholder="e.g. Engineering"
                 error={errors.name?.message}
                 {...register('name')}
             />
@@ -58,7 +58,7 @@ export function DivisionForm({ division, onSubmit, isLoading }: DivisionFormProp
             </div>
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" isLoading={isLoading}>
-                    {division ? 'Update Division' : 'Create Division'}
+                    {division ? 'Update Domain' : 'Create Domain'}
                 </Button>
             </div>
         </form>

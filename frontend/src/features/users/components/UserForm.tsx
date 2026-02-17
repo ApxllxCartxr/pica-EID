@@ -23,13 +23,7 @@ const userSchema = z.object({
     role_ids: z.array(z.number()).optional(),
 }).superRefine((data, ctx) => {
     if (data.category === UserCategory.INTERN) {
-        if (!data.start_date) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Start date is required for interns",
-                path: ["start_date"]
-            });
-        }
+        // Start date is now derived from date_of_joining, so we only validate end_date strictly
         if (!data.end_date) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
@@ -56,7 +50,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             email: user?.email || '',
             phone_number: user?.phone_number || '',
             category: user?.category || UserCategory.EMPLOYEE,
-            start_date: user?.start_date ? new Date(user.start_date).toISOString().split('T')[0] : '',
+            start_date: '', // No longer used in form, derived from date_of_joining
             end_date: user?.end_date ? new Date(user.end_date).toISOString().split('T')[0] : '',
             date_of_joining: user?.date_of_joining ? new Date(user.date_of_joining).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
             domain_id: user?.domain?.id,
@@ -109,24 +103,24 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Domain</label>
+                    <label className="text-sm font-medium text-slate-300">Division</label>
                     <select
                         {...register('domain_id')}
                         className="flex h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     >
-                        <option value="" className="bg-slate-900">Select Domain</option>
+                        <option value="" className="bg-slate-900">Select Division</option>
                         {domains?.map((d) => (
                             <option key={d.id} value={d.id} className="bg-slate-900">{d.name}</option>
                         ))}
                     </select>
                 </div>
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Division</label>
+                    <label className="text-sm font-medium text-slate-300">Domain</label>
                     <select
                         {...register('division_id')}
                         className="flex h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     >
-                        <option value="" className="bg-slate-900">Select Division</option>
+                        <option value="" className="bg-slate-900">Select Domain</option>
                         {divisions?.map((d) => (
                             <option key={d.id} value={d.id} className="bg-slate-900">{d.name}</option>
                         ))}
@@ -179,14 +173,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             </div>
 
             {category === UserCategory.INTERN && (
-                <div className="grid grid-cols-2 gap-4">
-                    <Input
-                        id="start_date"
-                        type="date"
-                        label="Internship Start"
-                        error={errors.start_date?.message}
-                        {...register('start_date')}
-                    />
+                <div className="grid grid-cols-1 gap-4">
                     <Input
                         id="end_date"
                         type="date"

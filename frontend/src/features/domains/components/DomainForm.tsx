@@ -6,7 +6,7 @@ import { Input } from '../../../components/ui/Input';
 import type { Domain } from '../../../types';
 
 const domainSchema = z.object({
-    name: z.string().min(1, 'Domain name is required'),
+    name: z.string().min(1, 'Division name is required'),
     description: z.string().optional(),
     is_active: z.boolean(),
 });
@@ -33,8 +33,8 @@ export function DomainForm({ domain, onSubmit, isLoading }: DomainFormProps) {
         <form onSubmit={handleSubmit((data) => onSubmit(data))} className="space-y-4">
             <Input
                 id="domain-name"
-                label="Domain Name"
-                placeholder="e.g. Engineering"
+                label="Division Name"
+                placeholder="e.g. North America"
                 error={errors.name?.message}
                 {...register('name')}
             />
@@ -58,7 +58,7 @@ export function DomainForm({ domain, onSubmit, isLoading }: DomainFormProps) {
             </div>
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" isLoading={isLoading}>
-                    {domain ? 'Update Domain' : 'Create Domain'}
+                    {domain ? 'Update Division' : 'Create Division'}
                 </Button>
             </div>
         </form>

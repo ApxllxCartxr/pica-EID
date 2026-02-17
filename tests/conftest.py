@@ -95,7 +95,7 @@ def viewer(db):
 @pytest.fixture
 def superadmin_token(client, superadmin):
     """Get JWT token for superadmin."""
-    response = client.post("/api/auth/login", json={
+    response = client.post("/api/v1/auth/login", json={
         "username": "testadmin",
         "password": "TestPass123",
     })
@@ -106,7 +106,7 @@ def superadmin_token(client, superadmin):
 @pytest.fixture
 def viewer_token(client, viewer):
     """Get JWT token for viewer."""
-    response = client.post("/api/auth/login", json={
+    response = client.post("/api/v1/auth/login", json={
         "username": "testviewer",
         "password": "ViewerPass123",
     })

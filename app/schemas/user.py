@@ -1,8 +1,8 @@
 """Pydantic schemas for user-related API operations."""
 
 from datetime import datetime, date
-from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List, Any
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from app.models.user import UserCategory, UserStatus
 
 
@@ -14,9 +14,18 @@ class UserCreate(BaseModel):
     domain_id: Optional[int] = None
     division_id: Optional[int] = None
     date_of_joining: Optional[date] = None
-    start_date: Optional[date] = None  # Required for interns
+    start_date: Optional[date] = None  # Will be auto-populated from date_of_joining for interns
     end_date: Optional[date] = None    # Required for interns
     role_ids: Optional[List[int]] = []
+
+    @model_validator(mode="before")
+    @classmethod
+    def clean_empty_dates(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            for field in ["start_date", "end_date", "date_of_joining"]:
+                if data.get(field) == "":
+                    data[field] = None
+        return data
 
 
 class UserUpdate(BaseModel):
@@ -28,6 +37,14 @@ class UserUpdate(BaseModel):
     date_of_joining: Optional[date] = None
     status: Optional[UserStatus] = None
     version: Optional[int] = None  # For optimistic locking
+
+    @model_validator(mode="before")
+    @classmethod
+    def clean_empty_dates(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if data.get("date_of_joining") == "":
+                data["date_of_joining"] = None
+        return data
 
 
 class UserResponse(BaseModel):
